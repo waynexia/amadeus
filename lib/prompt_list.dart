@@ -54,7 +54,7 @@ class _PromptListWidgetState extends State<PromptListWidget> {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text('Conversions'),
+          title: const Text('Amadeus'),
           shadowColor: Theme.of(context).colorScheme.shadow,
           actions: [
             TextButton(

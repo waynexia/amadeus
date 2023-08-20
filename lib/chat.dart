@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:amadeus/account.m.dart';
 import 'package:amadeus/log.dart';
@@ -24,6 +25,8 @@ class _ChatWidgetState extends State<ChatWidget> {
   late Prompt _prompt;
   bool isInited = false;
   late OpenaiClient _client;
+  int _tokenUsed = 0;
+  late Account _account;
 
   @override
   void initState() {
@@ -51,6 +54,7 @@ class _ChatWidgetState extends State<ChatWidget> {
       isInited = true;
       _prompt = prompt;
       _client = client;
+      _account = account;
     });
   }
 
@@ -86,6 +90,7 @@ class _ChatWidgetState extends State<ChatWidget> {
 
       _client.request(_prompt.prompt, _history).then((result) {
         setState(() {
+          _tokenUsed += result.completionTokens + result.promptTokens;
           _history.add(Message(
             result.message,
             "assistant",
@@ -117,6 +122,11 @@ class _ChatWidgetState extends State<ChatWidget> {
     if (!isInited) {
       return const Center(child: CircularProgressIndicator());
     }
+
+    double estFeeUsd =
+        roundDouble(_tokenUsed / _account.tokenUnit * _account.fee, 5);
+    double estFeeCustom =
+        roundDouble(estFeeUsd * _account.exchangeRateToUsd, 5);
 
     return Scaffold(
         appBar: AppBar(
@@ -159,16 +169,41 @@ class _ChatWidgetState extends State<ChatWidget> {
             ))),
             Align(
               alignment: Alignment.bottomCenter,
-              child: TextField(
-                maxLines: null,
-                autofocus: true,
-                focusNode: _focusNode,
-                controller: chatTextFieldController,
-                decoration: const InputDecoration(
-                  hintText: 'Enter message...',
-                  border: OutlineInputBorder(),
-                ),
-              ),
+              child: Column(children: [
+                Row(children: [
+                  TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _history.add(Message(
+                            "",
+                            "User",
+                            DateTime.now(),
+                            true,
+                          ));
+                        });
+                      },
+                      child: const Text("New Conversation")),
+                  Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: Text("Tokens used: $_tokenUsed")),
+                  Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: Text("Est.: \$$estFeeUsd")),
+                  Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: Text("Est. in your currency: $estFeeCustom"))
+                ]),
+                TextField(
+                  maxLines: null,
+                  autofocus: true,
+                  focusNode: _focusNode,
+                  controller: chatTextFieldController,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter message...',
+                    border: OutlineInputBorder(),
+                  ),
+                )
+              ]),
             ),
           ],
         ));
@@ -182,4 +217,9 @@ class Message {
   final bool isNewConversation;
 
   Message(this.text, this.sender, this.timestamp, this.isNewConversation);
+}
+
+double roundDouble(double value, int places) {
+  num mod = pow(10.0, places);
+  return ((value * mod).round().toDouble() / mod);
 }
