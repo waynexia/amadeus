@@ -75,14 +75,30 @@ class _AccountListWidgetState extends State<AccountListWidget> {
       body: ListView.builder(
         itemCount: _accounts!.length,
         itemBuilder: (context, index) {
-          return Card(
-            child: Column(
-              children: [
-                ListTile(
-                  title: Text(_accounts![index].id),
-                ),
-              ],
+          return InkWell(
+            child: Card(
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text(_accounts![index].id),
+                  ),
+                ],
+              ),
             ),
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => Scaffold(
+                        appBar: AppBar(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.inversePrimary,
+                          title: const Text('Account Form'),
+                          shadowColor: Theme.of(context).colorScheme.shadow,
+                        ),
+                        body: AccountForm(
+                          allowUpdate: true,
+                          account: _accounts![index],
+                        )))),
           );
         },
       ),

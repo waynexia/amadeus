@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:amadeus/account.m.dart';
 import 'package:amadeus/log.dart';
+import 'package:amadeus/openai.dart';
 import 'package:amadeus/prompt.m.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,10 +20,10 @@ class ChatWidget extends StatefulWidget {
 }
 
 class _ChatWidgetState extends State<ChatWidget> {
-  List<Message> history = [];
-  late Account account;
-  late Prompt prompt;
+  List<Message> _history = [];
+  late Prompt _prompt;
   bool isInited = false;
+  late OpenaiClient _client;
 
   @override
   void initState() {
@@ -35,19 +36,21 @@ class _ChatWidgetState extends State<ChatWidget> {
 
     final promptRawJson = prefs.getString(Prompt.storageKey(widget.promptName));
     final promptJson = jsonDecode(promptRawJson!);
-    prompt = Prompt.fromJson(promptJson);
+    final prompt = Prompt.fromJson(promptJson);
 
     final accountRawJson =
         prefs.getString(Account.storageKey(prompt.accountId));
     final accountJson = jsonDecode(accountRawJson!);
-    account = Account.fromJson(accountJson);
+    final account = Account.fromJson(accountJson);
+    final client = OpenaiClient(
+        url: account.url, path: account.path, token: account.token);
 
     debug("loaded account and prompt from storage");
 
     setState(() {
       isInited = true;
-      account = account;
-      prompt = prompt;
+      _prompt = prompt;
+      _client = client;
     });
   }
 
@@ -73,12 +76,32 @@ class _ChatWidgetState extends State<ChatWidget> {
     if (chatTextFieldController.text.trim().isNotEmpty) {
       // Do something with your input text
       setState(() {
-        history.add(Message(
+        _history.add(Message(
           chatTextFieldController.text,
           "User",
           DateTime.now(),
           false,
         ));
+      });
+
+      _client.request(_prompt.prompt, _history).then((result) {
+        setState(() {
+          _history.add(Message(
+            result.message,
+            "assistant",
+            DateTime.now(),
+            false,
+          ));
+        });
+      }).catchError((error) {
+        setState(() {
+          _history.add(Message(
+            error.toString(),
+            "assistant",
+            DateTime.now(),
+            false,
+          ));
+        });
       });
 
       // bring focus back to the input field
@@ -105,7 +128,7 @@ class _ChatWidgetState extends State<ChatWidget> {
               child: const Text("Clear History"),
               onPressed: () {
                 setState(() {
-                  history = [];
+                  _history = [];
                 });
               },
             ),
@@ -119,7 +142,7 @@ class _ChatWidgetState extends State<ChatWidget> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    for (Message item in history)
+                    for (Message item in _history)
                       if (item.isNewConversation)
                         const Divider()
                       else if (item.sender == "User")

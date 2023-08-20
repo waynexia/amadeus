@@ -10,9 +10,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AccountForm extends StatefulWidget {
   const AccountForm({
     required this.allowUpdate,
+    this.account,
     Key? key,
   }) : super(key: key);
   final bool allowUpdate;
+  final Account? account;
 
   @override
   _AccountFormState createState() => _AccountFormState();
@@ -47,6 +49,7 @@ class _AccountFormState extends State<AccountForm> {
             onSaved: (value) {
               _url = value!;
             },
+            initialValue: widget.account?.url,
           ),
           TextFormField(
             decoration: const InputDecoration(labelText: 'Path'),
@@ -59,6 +62,7 @@ class _AccountFormState extends State<AccountForm> {
             onSaved: (value) {
               _path = value!;
             },
+            initialValue: widget.account?.path,
           ),
           TextFormField(
             decoration: const InputDecoration(labelText: 'Token'),
@@ -71,6 +75,7 @@ class _AccountFormState extends State<AccountForm> {
             onSaved: (value) {
               _token = value!;
             },
+            initialValue: widget.account?.token,
           ),
           TextFormField(
             decoration: const InputDecoration(labelText: 'ID'),
@@ -83,6 +88,7 @@ class _AccountFormState extends State<AccountForm> {
             onSaved: (value) {
               _id = value!;
             },
+            initialValue: widget.account?.id,
           ),
           TextFormField(
             decoration:
@@ -100,6 +106,7 @@ class _AccountFormState extends State<AccountForm> {
             onSaved: (value) {
               _exchangeRateToUsd = double.parse(value!);
             },
+            initialValue: widget.account?.exchangeRateToUsd.toString(),
           ),
           TextFormField(
             decoration: const InputDecoration(labelText: 'Default Context Num'),
@@ -116,6 +123,7 @@ class _AccountFormState extends State<AccountForm> {
             onSaved: (value) {
               _defaultContextNum = int.parse(value!);
             },
+            initialValue: widget.account?.defaultContextNum.toString(),
           ),
           TextFormField(
             decoration: const InputDecoration(labelText: 'Token Unit'),
@@ -132,6 +140,7 @@ class _AccountFormState extends State<AccountForm> {
             onSaved: (value) {
               _tokenUnit = int.parse(value!);
             },
+            initialValue: widget.account?.tokenUnit.toString(),
           ),
           TextFormField(
             decoration: const InputDecoration(labelText: 'Fee'),
@@ -148,6 +157,7 @@ class _AccountFormState extends State<AccountForm> {
             onSaved: (value) {
               _fee = double.parse(value!);
             },
+            initialValue: widget.account?.fee.toString(),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
