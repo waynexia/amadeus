@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:amadeus/account_list.dart';
+import 'package:amadeus/chat.dart';
 import 'package:amadeus/prompt.m.dart';
 import 'package:amadeus/prompt_form.dart';
 import 'package:flutter/material.dart';
@@ -84,22 +85,29 @@ class _PromptListWidgetState extends State<PromptListWidget> {
             );
           }
           return Card(
-            child: Column(
-              children: [
-                ListTile(
-                  title: Text(_prompts![index].name),
-                  subtitle: Text(_prompts![index].description),
-                ),
-                Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                  Text(
-                    "account: ${_prompts![index].accountId}",
+            child: InkWell(
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text(_prompts![index].name),
+                    subtitle: Text(_prompts![index].description),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    "estimated fee: ${_prompts![index].estimatedFee}",
-                  ),
-                ]),
-              ],
+                  Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                    Text(
+                      "account: ${_prompts![index].accountId}",
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      "estimated fee: ${_prompts![index].estimatedFee}",
+                    ),
+                  ]),
+                ],
+              ),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatWidget(_prompts![index].name),
+                  )),
             ),
           );
         },

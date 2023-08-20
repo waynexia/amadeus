@@ -4,7 +4,6 @@ import 'package:amadeus/account.m.dart';
 import 'package:amadeus/account_form.dart';
 import 'package:amadeus/log.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountListWidget extends StatefulWidget {
