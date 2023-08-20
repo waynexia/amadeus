@@ -1,17 +1,19 @@
+import 'package:amadeus/account_form.dart';
+import 'package:amadeus/prompt_list.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const Amadeus());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class Amadeus extends StatelessWidget {
+  const Amadeus({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Amadeus',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -28,10 +30,11 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 191, 83, 20)),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Amadeus'),
     );
   }
 }
@@ -105,6 +108,27 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            ElevatedButton(
+                onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Scaffold(
+                            appBar: AppBar(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.inversePrimary,
+                              title: const Text('Account Form'),
+                              shadowColor: Theme.of(context).colorScheme.shadow,
+                            ),
+                            body: const AccountForm(
+                              allowUpdate: false,
+                            )))),
+                child: const Text('Account Form')),
+            ElevatedButton(
+                onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PromptListWidget())),
+                child: const Text('Show List')),
             const Text(
               'You have pushed the button this many times:',
             ),
