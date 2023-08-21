@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:amadeus/about.dart';
 import 'package:amadeus/account_list.dart';
 import 'package:amadeus/chat.dart';
 import 'package:amadeus/log.dart';
@@ -70,7 +71,12 @@ class _PromptListWidgetState extends State<PromptListWidget> {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text('Amadeus'),
+          title: InkWell(
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => AboutWidget())),
+            hoverColor: Colors.transparent,
+            child: const Text('Amadeus'),
+          ),
           shadowColor: Theme.of(context).colorScheme.shadow,
           actions: [
             TextButton(
@@ -81,57 +87,66 @@ class _PromptListWidgetState extends State<PromptListWidget> {
                       builder: (context) => const AccountListWidget(),
                     ))),
           ]),
-      body: ListView.builder(
-        itemCount: _prompts!.length + 1,
-        itemBuilder: (context, index) {
-          if (index == _prompts!.length) {
-            return ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Scaffold(
-                              appBar: AppBar(
-                                title: const Text('Add Prompt'),
-                              ),
-                              body: const PromptForm(allowUpdate: false),
-                            ))).then((_) => setState(() {
-                      _needReload = true;
-                    }));
-              },
-              child: const Text('Add Prompt'),
-            );
-          }
-          return Card(
-            child: InkWell(
-              child: Column(
-                children: [
-                  ListTile(
-                    title: Text(_prompts![index].name),
-                    subtitle: Text(_prompts![index].description),
+      body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: ListView.builder(
+            itemCount: _prompts!.length + 1,
+            itemBuilder: (context, index) {
+              if (index == _prompts!.length) {
+                return Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Scaffold(
+                                      appBar: AppBar(
+                                        title: const Text('Add Prompt'),
+                                      ),
+                                      body:
+                                          const PromptForm(allowUpdate: false),
+                                    ))).then((_) => setState(() {
+                              _needReload = true;
+                            }));
+                      },
+                      child: const Text('Add Prompt'),
+                    ));
+              }
+              return Card(
+                child: InkWell(
+                  child: Column(
+                    children: [
+                      ListTile(
+                        title: Text(_prompts![index].name),
+                        subtitle: Text(_prompts![index].description),
+                      ),
+                      Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  "account: ${_prompts![index].accountId}",
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  "estimated fee: ${_prompts![index].estimatedFee}",
+                                ),
+                              ])),
+                    ],
                   ),
-                  Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                    Text(
-                      "account: ${_prompts![index].accountId}",
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      "estimated fee: ${_prompts![index].estimatedFee}",
-                    ),
-                  ]),
-                ],
-              ),
-              onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ChatWidget(_prompts![index].name),
-                  )),
-              onSecondaryTap: () => pushEditPrompt(index),
-              onLongPress: () => pushEditPrompt(index),
-            ),
-          );
-        },
-      ),
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChatWidget(_prompts![index].name),
+                      )),
+                  onSecondaryTap: () => pushEditPrompt(index),
+                  onLongPress: () => pushEditPrompt(index),
+                ),
+              );
+            },
+          )),
     );
   }
 }
