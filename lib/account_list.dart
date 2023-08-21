@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountListWidget extends StatefulWidget {
+  const AccountListWidget({super.key});
+
   @override
   _AccountListWidgetState createState() => _AccountListWidgetState();
 }

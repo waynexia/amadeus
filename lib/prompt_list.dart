@@ -2,13 +2,15 @@ import 'dart:convert';
 
 import 'package:amadeus/account_list.dart';
 import 'package:amadeus/chat.dart';
+import 'package:amadeus/log.dart';
 import 'package:amadeus/prompt.m.dart';
 import 'package:amadeus/prompt_form.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PromptListWidget extends StatefulWidget {
+  const PromptListWidget({super.key});
+
   @override
   _PromptListWidgetState createState() => _PromptListWidgetState();
 }
@@ -37,8 +39,7 @@ class _PromptListWidgetState extends State<PromptListWidget> {
       }
     }
 
-    var logger = Logger();
-    logger.d("loaded ${prompts.length} prompts");
+    debug("loaded ${prompts.length} prompts");
 
     setState(() {
       _prompts = prompts;
@@ -62,7 +63,7 @@ class _PromptListWidgetState extends State<PromptListWidget> {
                 onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AccountListWidget(),
+                      builder: (context) => const AccountListWidget(),
                     ))),
           ]),
       body: ListView.builder(

@@ -12,9 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ChatWidget extends StatefulWidget {
   final String promptName;
 
-  const ChatWidget(
-    this.promptName,
-  ) : super();
+  const ChatWidget(this.promptName, {super.key});
 
   @override
   _ChatWidgetState createState() => _ChatWidgetState();
@@ -148,7 +146,6 @@ class _ChatWidgetState extends State<ChatWidget> {
           children: [
             Expanded(
                 child: SingleChildScrollView(
-                    child: Expanded(
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -166,7 +163,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                           textAlign: TextAlign.left,
                         ),
                   ]),
-            ))),
+            )),
             Align(
               alignment: Alignment.bottomCenter,
               child: Column(children: [
@@ -199,7 +196,8 @@ class _ChatWidgetState extends State<ChatWidget> {
                   focusNode: _focusNode,
                   controller: chatTextFieldController,
                   decoration: const InputDecoration(
-                    hintText: 'Enter message...',
+                    hintText:
+                        'Message here, press enter to send. cmd+enter or shift+enter for new line.',
                     border: OutlineInputBorder(),
                   ),
                 )
