@@ -22,9 +22,10 @@ jobs:
       - name: Enable flutter web
         run: flutter config --enable-web
       - name: 'Build Web App'
-        run: flutter build web
+        run: flutter build web --base-href "/amadeus/"
       - name: deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/web
+          publish_branch: pages
