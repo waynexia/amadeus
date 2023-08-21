@@ -17,12 +17,7 @@ class PromptListWidget extends StatefulWidget {
 
 class _PromptListWidgetState extends State<PromptListWidget> {
   List<Prompt>? _prompts;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
+  bool _needReload = false;
 
   Future<void> _loadData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -43,12 +38,32 @@ class _PromptListWidgetState extends State<PromptListWidget> {
 
     setState(() {
       _prompts = prompts;
+      _needReload = false;
     });
+  }
+
+  void pushEditPrompt(int index) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => Scaffold(
+                appBar: AppBar(
+                  backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                  title: const Text('Prompt Form'),
+                  shadowColor: Theme.of(context).colorScheme.shadow,
+                ),
+                body: PromptForm(
+                  allowUpdate: true,
+                  prompt: _prompts![index],
+                )))).then((_) => setState(() {
+          _needReload = true;
+        }));
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_prompts == null) {
+    if (_prompts == null || _needReload) {
+      _loadData();
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -80,7 +95,9 @@ class _PromptListWidgetState extends State<PromptListWidget> {
                                 title: const Text('Add Prompt'),
                               ),
                               body: const PromptForm(allowUpdate: false),
-                            )));
+                            ))).then((_) => setState(() {
+                      _needReload = true;
+                    }));
               },
               child: const Text('Add Prompt'),
             );
@@ -109,6 +126,8 @@ class _PromptListWidgetState extends State<PromptListWidget> {
                   MaterialPageRoute(
                     builder: (context) => ChatWidget(_prompts![index].name),
                   )),
+              onSecondaryTap: () => pushEditPrompt(index),
+              onLongPress: () => pushEditPrompt(index),
             ),
           );
         },

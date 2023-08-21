@@ -25,6 +25,7 @@ class _ChatWidgetState extends State<ChatWidget> {
   late OpenaiClient _client;
   int _tokenUsed = 0;
   late Account _account;
+  bool _isPending = false;
 
   @override
   void initState() {
@@ -65,7 +66,9 @@ class _ChatWidgetState extends State<ChatWidget> {
     // handles submit on enter
     if (event.isKeyPressed(LogicalKeyboardKey.enter)) {
       if (!event.isShiftPressed && !event.isControlPressed) {
-        _sendMessage();
+        if (!_isPending) {
+          _sendMessage();
+        }
       } else {
         chatTextFieldController.text += "\n";
       }
@@ -78,6 +81,7 @@ class _ChatWidgetState extends State<ChatWidget> {
     if (chatTextFieldController.text.trim().isNotEmpty) {
       // Do something with your input text
       setState(() {
+        _isPending = true;
         _history.add(Message(
           chatTextFieldController.text,
           "User",
@@ -88,6 +92,7 @@ class _ChatWidgetState extends State<ChatWidget> {
 
       _client.request(_prompt.prompt, _history).then((result) {
         setState(() {
+          _isPending = false;
           _tokenUsed += result.completionTokens + result.promptTokens;
           _history.add(Message(
             result.message,
@@ -98,6 +103,7 @@ class _ChatWidgetState extends State<ChatWidget> {
         });
       }).catchError((error) {
         setState(() {
+          _isPending = false;
           _history.add(Message(
             error.toString(),
             "assistant",
@@ -153,14 +159,21 @@ class _ChatWidgetState extends State<ChatWidget> {
                       if (item.isNewConversation)
                         const Divider()
                       else if (item.sender == "User")
-                        Text(
-                          item.text,
-                          textAlign: TextAlign.right,
-                        )
+                        Padding(
+                            padding: const EdgeInsets.only(
+                                left: 40, right: 10, bottom: 15),
+                            child: SelectableText(
+                              item.text,
+                              textAlign: TextAlign.right,
+                            ))
                       else
-                        Text(
-                          item.text,
-                          textAlign: TextAlign.left,
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 10, right: 40, bottom: 15),
+                          child: SelectableText(
+                            item.text,
+                            textAlign: TextAlign.left,
+                          ),
                         ),
                   ]),
             )),
@@ -190,6 +203,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       child: Text("Est. in your currency: $estFeeCustom"))
                 ]),
+                if (_isPending) const LinearProgressIndicator(),
                 TextField(
                   maxLines: null,
                   autofocus: true,

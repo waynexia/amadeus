@@ -18,8 +18,7 @@ void info(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
         content: Text(message,
-            style: TextStyle(
-                color: Theme.of(context).colorScheme.inversePrimary))));
+            style: TextStyle(color: Theme.of(context).colorScheme.primary))));
   }
   logger.i(message);
 }

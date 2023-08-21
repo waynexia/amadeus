@@ -11,9 +11,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 class PromptForm extends StatefulWidget {
   const PromptForm({
     required this.allowUpdate,
+    this.prompt,
     Key? key,
   }) : super(key: key);
   final bool allowUpdate;
+  final Prompt? prompt;
 
   @override
   _PromptFormState createState() => _PromptFormState();
@@ -44,12 +46,14 @@ class _PromptFormState extends State<PromptForm> {
             onSaved: (value) {
               _name = value!;
             },
+            initialValue: widget.prompt?.name,
           ),
           TextFormField(
             decoration: const InputDecoration(labelText: 'Description'),
             onSaved: (value) {
               _description = value ?? "";
             },
+            initialValue: widget.prompt?.description,
           ),
           TextFormField(
             decoration: const InputDecoration(labelText: 'Prompt'),
@@ -62,6 +66,7 @@ class _PromptFormState extends State<PromptForm> {
             onSaved: (value) {
               _prompt = value!;
             },
+            initialValue: widget.prompt?.prompt,
           ),
           TextFormField(
             decoration: const InputDecoration(labelText: 'Account ID'),
@@ -74,6 +79,7 @@ class _PromptFormState extends State<PromptForm> {
             onSaved: (value) {
               _accountId = value!;
             },
+            initialValue: widget.prompt?.accountId,
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),

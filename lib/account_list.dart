@@ -15,12 +15,7 @@ class AccountListWidget extends StatefulWidget {
 
 class _AccountListWidgetState extends State<AccountListWidget> {
   List<Account>? _accounts;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
+  bool _needReload = false;
 
   Future<void> _loadData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -41,12 +36,14 @@ class _AccountListWidgetState extends State<AccountListWidget> {
 
     setState(() {
       _accounts = accounts;
+      _needReload = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_accounts == null) {
+    if (_accounts == null || _needReload) {
+      _loadData();
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -70,7 +67,9 @@ class _AccountListWidgetState extends State<AccountListWidget> {
                         ),
                         body: const AccountForm(
                           allowUpdate: false,
-                        )))),
+                        )))).then((_) => setState(() {
+                  _needReload = true;
+                })),
           ),
         ],
       ),
@@ -100,7 +99,9 @@ class _AccountListWidgetState extends State<AccountListWidget> {
                         body: AccountForm(
                           allowUpdate: true,
                           account: _accounts![index],
-                        )))),
+                        )))).then((_) => setState(() {
+                  _needReload = true;
+                })),
           );
         },
       ),
